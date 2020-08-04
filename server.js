@@ -60,7 +60,7 @@ app.use((req, res, next) => {
     next();
 })
 
-const port = 8081;
+const port = process.env('PORT') || 8081;
 
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, "index.html")));
@@ -172,25 +172,11 @@ app.post('/changeShort', (req, res) => {
         });
 });
 
-app.all('/return', (req, res) => {
-    setTimeout(_ => {
-        // console.log(req.body);
-        res.send(JSON.stringify({
-            req: req.body,
-            "alreadyExist": true
-        }));
-    }, 4000)
-});
-
 app.get("/allLinks", (req, res) => {
     db.query("select * from shortlinks", (...query) => {
         res.send(query[1]);
     })
 });
-
-app.get('/db', (_, res) => {
-    res.send("SUCCESSFULLY REACHED /DB");
-})
 app.all("/:shortened", ({
     params: {
         shortened
@@ -225,11 +211,6 @@ app.all("/:shortened", ({
         res.status(404).send("Invalid Request");
     }
 });
-
-
-
-app.get('/redirect', (req, res) => res.redirect("https://google.com", 302));
-
 app.listen(port, () => {
     db.getConnection((err, ...abc) => {
         // console.log(abc);
