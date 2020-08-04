@@ -1,0 +1,32 @@
+{
+  "name": "url-shortner",
+  "version": "0.0.1",
+  "description": "A Node based URL Shortner",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "nstart": "nodemon ./server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Omkaragrawal/URL-SHORTNER.git"
+  },
+  "author": "OMKAR AGRAWAL",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Omkaragrawal/URL-SHORTNER/issues"
+  },
+  "homepage": "https://github.com/Omkaragrawal/URL-SHORTNER#readme",
+  "dependencies": {
+    "compression": "^1.7.4",
+    "express": "^4.17.1",
+    "helmet": "^3.22.0",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
+    "nanoid": "^3.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "2.0.4"
+  }
+}

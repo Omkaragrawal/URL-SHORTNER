@@ -1,0 +1,12 @@
+CREATE TABLE u800182220_miniurl.shortlinks (
+  id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  shortend VARCHAR(32)  CHARACTER SET utf8 COLLATE utf8_bin NOT NULL UNIQUE,
+  actual_link VARCHAR(3000)  CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  creation_date DATETIME NOT NULL,
+  total_clicks INT(11) UNSIGNED NOT NULL,
+  PRIMARY KEY (id)
+)
+ENGINE = INNODB;
+
+ALTER TABLE u800182220_miniurl.shortlinks 
+  ADD FULLTEXT INDEX IDX_shortlinks_shortend(shortend);

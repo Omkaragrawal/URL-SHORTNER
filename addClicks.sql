@@ -1,0 +1,1 @@
+UPDATE shortlinks SET total_clicks = total_clicks + 1 where id = ?;
