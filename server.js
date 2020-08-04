@@ -60,7 +60,7 @@ app.use((req, res, next) => {
     next();
 })
 
-console.log(process.env.PORT);
+// console.log(process.env.PORT);
 // console.log(process.env);
 const port = process.env.PORT || 8081;
 
@@ -75,8 +75,8 @@ app.post('/createLink', (req, res) => {
                     console.log("ERROR on line 73: ", err);
                     responseObject.send(err);
                 } else {
-                    console.log(fields);
-                    console.log("Results: ", results);
+                    // console.log(fields);
+                    // console.log("Results: ", results);
                     responseObject.send({
                         "success": "SUCCESS",
                         "results": results,
@@ -133,7 +133,7 @@ app.post('/changeShort', (req, res) => {
         console.log('checkShort invalid')
         res.send("checkShort invalid");
     } else {
-        console.log(req.checkShort);
+        // console.log(req.checkShort);
     }
     req.checkShort(short, linkID, res)
         .then(({
@@ -141,12 +141,12 @@ app.post('/changeShort', (req, res) => {
             results
         }) => {
 
-            console.log("exists? ", doesExist);
-            console.log("results: ", results);
+            // console.log("exists? ", doesExist);
+            // console.log("results: ", results);
             // res.json({doesExist, results});
             if (!doesExist) {
-                console.log(doesExist);
-                console.log(results);
+                // console.log(doesExist);
+                // console.log(results);
                 res.status(400).send("Invalid parameters");
             } else {
                 // if (results)
@@ -155,8 +155,8 @@ app.post('/changeShort', (req, res) => {
                         console.log("ERROR on 138: ", err);
                         res.send(err);
                     } else {
-                        console.log(fields);
-                        console.log(updateResult);
+                        // console.log(fields);
+                        // console.log(updateResult);
                         res.json({
                             success: true,
                             results: updateResult,
@@ -166,7 +166,7 @@ app.post('/changeShort', (req, res) => {
                 });
             }
         }).catch((err) => {
-            console.log("ERROR on line 152: ", err);
+            // console.log("ERROR on line 152: ", err);
             res.send({
                 success: false,
                 results: err
@@ -184,7 +184,7 @@ app.all("/:shortened", ({
         shortened
     }
 }, res) => {
-    console.log(mysql.escape(shortened))
+    // console.log(mysql.escape(shortened))
     // console.log(req.params.shortened);
 
     if (shortened) {
@@ -222,5 +222,5 @@ app.listen(port, () => {
         }
         console.log("DB Connected!!!")
     });
-    console.log(`Example app listening on ${port} port!`);
+    console.log(`URL shortner app listening on ${port} port!`);
 })
