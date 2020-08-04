@@ -60,7 +60,9 @@ app.use((req, res, next) => {
     next();
 })
 
-const port = process.env('PORT') || 8081;
+console.log(process.env.PORT);
+// console.log(process.env);
+const port = process.env.PORT || 8081;
 
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, "index.html")));
