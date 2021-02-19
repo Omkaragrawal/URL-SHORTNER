@@ -100,48 +100,16 @@ app.get("/:shortened", async ({
         res.status(404).send("Invalid Request");
     }
 });
-// app.listen(port, () => {
-//     global.db = new Pool({
-//         connectionString: process.env.DATABASE_URL,
-//         ssl: {
-//             rejectUnauthorized: false
-//         }
-//     });
-//     // db = pool.connect()
-//     console.log(`URL shortner app listening on ${port} port!`);
-// });
-
-if (!process.env.NODE_ENV || process.env.NODE_ENV !== "production") {
-    const http = require('http');
-    const httpServer = http.createServer(app);
-    httpServer.listen(port, () => {
-        global.db = new Pool({
-            connectionString: process.env.DATABASE_URL,
-            ssl: {
-                rejectUnauthorized: false
-            }
-        });
-        // db = pool.connect()
-        console.log(`URL shortner app listening on ${port} port!`);
+app.listen(port, () => {
+    global.db = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: {
+            rejectUnauthorized: false
+        }
     });
-} else {
-    const https = require('https');
-    const httpsServer = https.createServer({
-        key: process.env.key,
-        cert: process.env.cert,
-    }, app);
-    console.log('Creating https');
-    httpsServer.listen(port, () => {
-        global.db = new Pool({
-            connectionString: process.env.DATABASE_URL
-            // ssl: {
-            //     rejectUnauthorized: false
-            // }
-        });
-        // db = pool.connect()
-        console.log(`URL shortner app listening on ${port} port!`);
-    });
-};
+    // db = pool.connect()
+    console.log(`URL shortner app listening on ${port} port!`);
+});
 
 process.on('exit', () => {
     console.log("Process exiting and closing the db");
