@@ -64,7 +64,112 @@ const port = process.env.PORT || 8081;
 
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, "index.html")));
+app.get('/index.js', (req, res) => res.sendFile(path.join(__dirname, "index.js")));
+app.post('/createLink', (req, res) => {
+    const createNewEntry = async (shortend = nanoid(), ocLink = req.body.toShorten, responseObject = res) => {
+        try {
+            let results = await db.query('insert into public.shortlinks(shortend, actual_link) values ($1, $2) returning *;', [shortend, ocLink]);
+            await results;
+            if (results.rowCount === 1) {
+                responseObject.send({
+                    "success": "SUCCESS",
+                    "results": results,
+                    // "fields": fields,
+                    "shortLink": shortend
+                })
+            } else throw results;
+        } catch (err) {
+            console.log(err);
+            responseObject.status(500).send(err);
+        }
+    };
 
+    if (req.body.toShorten) {
+
+        if (req.body.customShortner) {
+            if (["", "index.js", "index.html", "createLink", "changeShort", "allLinks"].includes(req.body.customShortner)) {
+                res.send({ alreadyExist: true })
+            } else {
+                db.query('select * from public.shortlinks where shortend = $1;', [req.body.customShortner], (err, results) => {
+                    if (err) {
+                        res.send({ err: err })
+                    }
+                    else if (results.rowCount < 1) {
+                        createNewEntry(req.body.customShortner, req.body.toShorten, res);
+                    }
+                    else if (results.rowCount > 0) {
+                        res.send({
+                            "alreadyExist": results
+                        });
+                    };
+                });
+            }
+        } else {
+            createNewEntry()
+        }
+
+    } else {
+        res.status(400).send(`INVALID REQUEST`);
+    }
+});
+
+app.post('/changeShort', (req, res) => {
+    const {
+        linkID,
+        short,
+        newLink
+    } = req.body;
+
+    if (!req.checkShort) {
+        console.log('checkShort invalid')
+        res.send("checkShort invalid");
+    } else {
+        // console.log(req.checkShort);
+    }
+    req.checkShort(short, linkID, res)
+        .then(({
+            doesExist,
+            results
+        }) => {
+
+            // console.log("exists? ", doesExist);
+            // console.log("results: ", results);
+            // res.json({doesExist, results});
+            if (!doesExist) {
+                // console.log(doesExist);
+                // console.log(results);
+                res.status(400).send("Invalid parameters");
+            } else {
+                // if (results)
+                db.query('UPDATE public.shortlinks SET actual_link = ?, creation_date = ?, total_clicks = 0 where id = ? and shortend = ?', [newLink, new Date().toISOString(), linkID, short], (err, updateResult, fields) => {
+                    if (err) {
+                        console.log("ERROR on 138: ", err);
+                        res.send(err);
+                    } else {
+                        // console.log(fields);
+                        // console.log(updateResult);
+                        res.json({
+                            success: true,
+                            results: updateResult,
+                            fields: fields
+                        });
+                    }
+                });
+            }
+        }).catch((err) => {
+            // console.log("ERROR on line 152: ", err);
+            res.send({
+                success: false,
+                results: err
+            });
+        });
+});
+
+app.get("/allLinks", (req, res) => {
+    db.query("select * from public.shortlinks", (...query) => {
+        res.send(query[1]);
+    })
+});
 app.get("/:shortened", ({
     params: {
         shortened
@@ -82,15 +187,7 @@ app.get("/:shortened", ({
                 console.log(err)
                 res.send(err);
             } else if (results.rowCount === 1) {
-                db.query('UPDATE public.shortlinks SET total_clicks = total_clicks + 1 where id = $1;', [results.rows[0].id], (err, result, field) => {
-                    if (err) {
-                        res.send(err)
-                    } else {
-                        res.redirect(results.rows[0].actual_link)
-                    }
-                });
-                // res.send({"results": results, "fields": fieldInfo});
-                // res.redirect(results[0].actual_link);
+                res.redirect(results.rows[0].actual_link);
             } else {
                 res.status(404).send("Invalid Request No Entry");
             }
@@ -112,4 +209,4 @@ app.listen(port, () => {
 
 process.on('exit', () => {
     db.end();
-});
+})
