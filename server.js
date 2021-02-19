@@ -15,11 +15,6 @@ const nanoid = customRandom("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmno
 
 // const nanoid = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 7);
 
-if (!process.env.NODE_ENV || process.env.NODE_ENV !== "production") {
-    let dotenv = require('dotenv').config();
-    console.log("inside env");
-};
-
 const app = express();
 app.use(compression());
 app.use(helmet());
@@ -58,13 +53,25 @@ app.use((req, res, next) => {
     next();
 })
 
-// console.log(process.env.PORT);
-// console.log(process.env);
+if (!process.env.NODE_ENV || process.env.NODE_ENV !== "production") {
+    let dotenv = require('dotenv').config();
+    // console.log("inside env");
+} else {
+    console.log("inside prod");
+    app.enable('trust proxy');
+    app.use(function (request, response, next) {
+        if (!request.secure) {
+            return response.redirect("https://" + request.headers.host + request.url);
+        }
+        next();
+    });
+};
 const port = process.env.PORT || 8081;
 
 
 app.get('/', (req, res) => res.redirect('https://omkaragrawal.dev'));
 app.get('/index.html', (req, res) => res.redirect('https://omkaragrawal.dev'));
+app.get('/test', (req, res) => res.send("<h1><b>Success</b></h1>"));
 
 app.get("/:shortened", async ({
     params: {
