@@ -63,9 +63,10 @@ app.use((req, res, next) => {
 const port = process.env.PORT || 8081;
 
 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, "index.html")));
+app.get('/', (req, res) => res.redirect('https://omkaragrawal.dev'));
+app.get('/index.html', (req, res) => res.redirect('https://omkaragrawal.dev'));
 
-app.get("/:shortened", ({
+app.get("/:shortened", async ({
     params: {
         shortened
     }
