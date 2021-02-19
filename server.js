@@ -4,22 +4,9 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const { Pool } = require('pg');
 const path = require('path');
-const bodyParser = require("body-parser");
-const compression = require('compression');
-// const { customAlphabet } = require('nanoid');
-const {
-    customRandom,
-    random
-} = require('nanoid');
-const nanoid = customRandom("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 7, random);
 
-// const nanoid = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", 7);
-
-const app = express();
-app.use(compression());
+const app = express();1
 app.use(helmet());
-// app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
 app.use(morgan('dev'));
 app.use((req, res, next) => {
     const checkShort = (short, checkID) => {
@@ -69,39 +56,32 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV !== "production") {
 const port = process.env.PORT || 8081;
 
 
-app.get('/', (req, res) => res.redirect('https://omkaragrawal.dev'));
-app.get('/index.html', (req, res) => res.redirect('https://omkaragrawal.dev'));
-app.get('/test', (req, res) => res.send("<h1><b>Success</b></h1>"));
+app.get('/', async (req, res) => res.redirect('https://omkaragrawal.dev'));
+app.get('/index.html', async (req, res) => res.redirect('https://omkaragrawal.dev'));
 
 app.get("/:shortened", async ({
     params: {
         shortened
     }
 }, res) => {
-    // console.log(pg.escape(shortened))
-    // console.log(req.params.shortened);
 
     if (shortened) {
         db.query('select id, actual_link from public.shortlinks where shortend = $1;', [shortened], (err, results) => {
-            // const toRedirectLink = results[0].actual_link
-            // console.log(toRedirectLink);
-            // console.log(results[0].id);
             if (err) {
                 console.log(err)
                 res.send(err);
             } else if (results.rowCount === 1) {
                 db.query('UPDATE public.shortlinks SET total_clicks = total_clicks + 1 where id = $1;', [results.rows[0].id], (err, result, field) => {
                     if (err) {
+                        console.log(err);
                         res.send(err)
                     } else {
                         res.redirect(results.rows[0].actual_link)
                     }
                 });
-                // res.send({"results": results, "fields": fieldInfo});
-                // res.redirect(results[0].actual_link);
             } else {
                 res.status(404).send("Invalid Request No Entry");
-            }
+            };
         });
     } else {
         res.status(404).send("Invalid Request");
